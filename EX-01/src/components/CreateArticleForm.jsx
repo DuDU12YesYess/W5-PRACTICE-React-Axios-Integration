@@ -1,5 +1,6 @@
+import axios from 'axios';
 import { useState } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link} from 'react-router-dom';
 
 export default function ArticleForm() {
   const [form, setForm] = useState({
@@ -16,6 +17,36 @@ export default function ArticleForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Validate form data
+    const createArticle = async (form) => {
+      const {title , content, journalistId, categoryId} = form
+      const validate = title && content && journalistId && categoryId;
+      if(!validate){
+        console.log("Need to complete all the input");
+      }
+
+      console.log(form)
+
+      try{
+        const res = await axios.post('http://localhost:3000/articles', form);
+
+        console.log("Article created", res.data);
+        
+        // Optional: clear form
+        setForm({
+          title: "",
+          content: "",
+          journalistId: "",
+          categoryId: "",
+        });
+
+      }
+      catch(error){
+        console.error("Create error:", error.response.data);
+      }
+    }
+
+    createArticle(form);
+    
   };
 
   return (
@@ -36,7 +67,6 @@ export default function ArticleForm() {
         <input name="categoryId" value={form.categoryId} onChange={handleChange} placeholder="Category ID" required /><br />
         <button type="submit">Add</button>
       </form>
-
     </div>
   );
 }
